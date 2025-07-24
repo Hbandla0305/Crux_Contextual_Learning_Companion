@@ -1,0 +1,221 @@
+# 🧠 Contextual Learning Companion – Replit Agent Full Prompt (Canvas Version)
+
+## 🌟 AGENT BEHAVIOR & EXECUTION MINDSET
+
+Act like a relentless full-stack engineering team with perfect memory, infinite patience, and zero tolerance for broken features or hallucinations.
+
+You must:
+
+1. **Reflect deeply after each step.**
+
+   * Ask yourself: “Did I miss anything?” “Are all edge cases handled?” “Is this user-friendly and secure?”
+2. **Re-evaluate everything built so far after each module is complete.**
+
+   * If needed, refactor or fix gaps before moving on.
+3. **Execute in closed loops:**
+
+   * Plan → Reflect → Execute → Evaluate → Refine → Repeat
+   * Keep looping until the output is 100% aligned with the goal.
+4. **Double-check every nook and cranny:**
+
+   * Forms must validate
+   * Charts must render
+   * APIs must respond
+   * State must persist
+   * AI must not break
+5. **Never hallucinate anything** — if something is uncertain or not in spec, ask for clarification or build a minimal, extensible version with clear notes.
+6. **No partial implementations or placeholders.**
+
+   * Every feature in the prompt must be fully implemented, styled, and connected.
+   * Treat this like a real production-ready SaaS product being launched to real users.
+7. **Don’t guess — verify.**
+
+   * If you mention an OpenAI API call, use correct parameters.
+   * If you build with Supabase, make sure tables, policies, and keys are aligned.
+8. **Always default to clarity, simplicity, and beauty.**
+
+   * Keep UX joyful and clear.
+   * Prioritize maintainable, elegant code.
+   * Make everything feel as seamless and reliable as an Apple product.
+
+You are not just building a demo. You are delivering a living, breathing app that real families will use to manage real health data. It must be beautiful, bulletproof, and complete.
+
+---
+
+## 🌟 Project Vision:
+
+Build a beautifully modern, no-login web app that transforms **any article, YouTube video, or text** into a **complete learning toolkit**. The app should feel like a smart, supportive **study buddy**, not a boring academic tool. Every interaction should be fast, fun, and frictionless.
+
+---
+
+## 🧩 Core User Flow:
+
+### 1. **User Inputs**
+
+* **Text Input Area:**
+
+  * Placeholder: "Paste a YouTube link, article URL, or raw text"
+  * Max character limit: 20,000 characters
+  * Auto-detect if it’s a link (YouTube, blog, article) vs plain text
+
+* **File Upload:**
+
+  * Drag-and-drop zone for `.pdf` and `.txt`
+  * Optional "Browse Files" button
+  * Auto-preview file name + delete option
+
+* **Optional Transcript Fetcher:**
+
+  * If input is YouTube, fetch transcript via API (or use OpenAI Whisper)
+
+### 2. **Outputs Generated**
+
+Once input is processed, the following sections load in a fade-in animation:
+
+#### 📝 Summary
+
+* A concise 1–2 paragraph summary in plain English
+* Emphasis on clarity, simplicity, and usefulness
+* Title: "Quick Summary"
+
+#### 🔖 Flashcards
+
+* 5 to 10 Q\&A flashcards
+* Simple toggle or flip-style cards
+* Option to mark as “Mastered” or “Review Later” (local only, no login)
+* Title: "Flashcards to Memorize"
+
+#### ❓ Quiz
+
+* 5 MCQs (each with 4 answer choices)
+* One correct answer + explanation
+* Users can select answers and get feedback instantly
+* Title: "Test Your Understanding"
+
+#### 🧠 Mind Map (Visual)
+
+* Center node = main topic (title or AI-extracted theme)
+* Branches = subtopics (1–2 keywords + 1 fact per subtopic)
+* Interactive zoom & pan
+* Generated as SVG or HTML/CSS tree structure
+* Button: "Download Mind Map (.png)"
+* Title: "Visual Mind Map"
+
+---
+
+## 🖼 UI/UX Design
+
+### 🎨 Design Style:
+
+* Inspired by **Notion**, **Apple Notes**, and **Duolingo**
+* Rounded cards, soft shadows, clean typography (use Inter or SF Pro)
+* Pastel color palette with accent highlights (e.g., soft green for flashcards)
+* Subtle gradients or fade-ins for load animations
+* Layout: All sections on a single scrollable page with anchor navigation
+
+### ✨ UX Interactions:
+
+* Typing or uploading triggers spinner + “Hang tight, we’re building your toolkit...” message
+* After processing, sections animate in with bounce/fade
+* Friendly copy tone: “Here’s your learning kit!” “You crushed that quiz!”
+* Mobile-friendly layout (cards stack, font adapts)
+
+---
+
+## 🧪 Core Tech/Logic
+
+### 🔍 Content Extraction
+
+* For URLs: Fetch article content using readability tools or Mercury parser
+* For YouTube: Use transcript or Whisper if API access not available
+* For PDFs: Use pdf-parse or PDF.js to extract clean text
+* Detect language and convert if needed
+
+### 🧠 AI Generation (Using OpenAI API)
+
+1. **Summarization Prompt:**
+
+   * "Summarize this text in 2 paragraphs using plain, clear English."
+
+2. **Flashcard Prompt:**
+
+   * "Generate 5–10 Q\&A flashcards from this text. Use simple language."
+
+3. **Quiz Prompt:**
+
+   * "Create 5 multiple-choice questions (with 4 options each) about this text. Mark the correct answer and provide short explanations."
+
+4. **Mind Map Prompt:**
+
+   * "Create a mind map with one central concept and 5–8 subtopics, each with 1–2 key facts. Return JSON or nested structure."
+   * Frontend renders this into a radial SVG diagram
+
+---
+
+## 📂 Export Options
+
+* ✅ Download All as PDF → Combines Summary + Flashcards + Quiz
+* ✅ Download Mind Map as PNG
+* ✅ Export Flashcards to Anki (.csv with Q, A columns)
+
+---
+
+## 🔐 Privacy & Access
+
+* No login or signup
+* No cloud storage or tracking
+* Local browser memory for short-term state (e.g., marked flashcards)
+* Clear note: “All content processed locally or securely via OpenAI. No data is stored.”
+
+---
+
+## 📱 Responsive Design
+
+* 📱 Mobile-first layout
+* 💽 Responsive for tablets, desktops, large screens
+* Touch gestures for mind map
+
+---
+
+## ♻️ Bonus Features (Optional Stretch Goals)
+
+* 🌐 Language toggle for output (EN, ES, FR, HI)
+* 🔁 “Regenerate Quiz” button
+* ✍️ “Edit Summary” button
+* 🧠 Mind Map to Flashcard converter (click on a node to add to flashcards)
+
+---
+
+## 🧑‍🏫 Ideal Users
+
+* Students learning new topics
+* Professionals doing content review
+* Bloggers summarizing sources
+* Curious minds digging deeper
+
+---
+
+## ⚖️ Dev Notes for Replit Agent
+
+* All logic can be implemented using a lightweight Node.js or Python backend (for PDF parsing, OpenAI calls)
+* Frontend in React (Vite or Next.js)
+* Use Tailwind for clean UI and responsiveness
+* AI key passed securely, or used via server proxy
+* Consider rate-limiting if OpenAI credits limited
+* Use localStorage for flashcard state
+
+---
+
+## ✅ Completion Criteria
+
+* All 4 outputs (Summary, Flashcards, Quiz, Mind Map) work with any input
+* Clean animations and one-page layout
+* No login/signup
+* Mobile and desktop work seamlessly
+* Exports working (PDF, PNG, CSV)
+
+---
+
+Let this agent be obsessed with perfection — every pixel, every word, and every function should feel *delightful*. Build it like it’s your favorite personal tool.
+
+“Paste. Learn. Remember. Repeat.”
