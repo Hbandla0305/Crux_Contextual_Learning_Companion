@@ -110,7 +110,7 @@ export default function ContentInput({ onContentProcessed, setIsLoading }: Conte
     } catch (error) {
       toast({
         title: "Processing failed",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Unknown error',
         variant: "destructive",
       });
     } finally {

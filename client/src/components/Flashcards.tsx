@@ -28,18 +28,18 @@ export default function Flashcards({ flashcards }: FlashcardsProps) {
   };
 
   const markMastered = (index: number) => {
-    setMasteredCards(prev => new Set([...prev, index]));
+    setMasteredCards(prev => new Set(Array.from(prev).concat([index])));
     setReviewCards(prev => {
-      const newSet = new Set(prev);
+      const newSet = new Set(Array.from(prev));
       newSet.delete(index);
       return newSet;
     });
   };
 
   const markReview = (index: number) => {
-    setReviewCards(prev => new Set([...prev, index]));
+    setReviewCards(prev => new Set(Array.from(prev).concat([index])));
     setMasteredCards(prev => {
-      const newSet = new Set(prev);
+      const newSet = new Set(Array.from(prev));
       newSet.delete(index);
       return newSet;
     });

@@ -33,7 +33,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         extractedContent = await extractContent(content, contentType);
       } catch (error) {
-        return res.status(400).json({ error: error.message });
+        return res.status(400).json({ error: error instanceof Error ? error.message : 'Unknown error' });
       }
 
       // Create initial learning content record
@@ -64,13 +64,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Return the content with error message if AI generation fails
         res.status(500).json({ 
           error: "Failed to generate learning materials. Please check your OpenAI API key and try again.",
-          details: aiError.message,
+          details: aiError instanceof Error ? aiError.message : 'Unknown error',
           contentId: learningContent.id
         });
       }
 
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
 
@@ -137,13 +137,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (aiError) {
         res.status(500).json({ 
           error: "Failed to generate learning materials. Please check your OpenAI API key and try again.",
-          details: aiError.message,
+          details: aiError instanceof Error ? aiError.message : 'Unknown error',
           contentId: learningContent.id
         });
       }
 
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
 
@@ -159,7 +159,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(content);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
 

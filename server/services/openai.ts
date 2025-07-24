@@ -24,7 +24,7 @@ export async function generateSummary(content: string): Promise<string> {
 
     return response.choices[0].message.content || "Unable to generate summary.";
   } catch (error) {
-    throw new Error(`Failed to generate summary: ${error.message}`);
+    throw new Error(`Failed to generate summary: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -48,7 +48,7 @@ export async function generateFlashcards(content: string): Promise<Array<{questi
     const result = JSON.parse(response.choices[0].message.content || "{}");
     return result.flashcards || [];
   } catch (error) {
-    throw new Error(`Failed to generate flashcards: ${error.message}`);
+    throw new Error(`Failed to generate flashcards: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -72,7 +72,7 @@ export async function generateQuiz(content: string): Promise<Array<{question: st
     const result = JSON.parse(response.choices[0].message.content || "{}");
     return result.questions || [];
   } catch (error) {
-    throw new Error(`Failed to generate quiz: ${error.message}`);
+    throw new Error(`Failed to generate quiz: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -96,6 +96,6 @@ export async function generateMindMap(content: string): Promise<{centralTopic: s
     const result = JSON.parse(response.choices[0].message.content || "{}");
     return result || { centralTopic: "Topic", branches: [] };
   } catch (error) {
-    throw new Error(`Failed to generate mind map: ${error.message}`);
+    throw new Error(`Failed to generate mind map: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

@@ -10,19 +10,19 @@ export function exportToPDF(data: LearningContent) {
 
     // Title
     pdf.setFontSize(20);
-    pdf.setFont(undefined, "bold");
+    pdf.setFont("helvetica", "bold");
     pdf.text("Learning Toolkit", margin, yPosition);
     yPosition += 20;
 
     // Summary
     if (data.summary) {
       pdf.setFontSize(16);
-      pdf.setFont(undefined, "bold");
+      pdf.setFont("helvetica", "bold");
       pdf.text("Summary", margin, yPosition);
       yPosition += 10;
 
       pdf.setFontSize(12);
-      pdf.setFont(undefined, "normal");
+      pdf.setFont("helvetica", "normal");
       const summaryLines = pdf.splitTextToSize(data.summary, 170);
       pdf.text(summaryLines, margin, yPosition);
       yPosition += summaryLines.length * 6 + 15;
@@ -37,7 +37,7 @@ export function exportToPDF(data: LearningContent) {
     // Flashcards
     if (data.flashcards && data.flashcards.length > 0) {
       pdf.setFontSize(16);
-      pdf.setFont(undefined, "bold");
+      pdf.setFont("helvetica", "bold");
       pdf.text("Flashcards", margin, yPosition);
       yPosition += 15;
 
@@ -48,11 +48,11 @@ export function exportToPDF(data: LearningContent) {
         }
 
         pdf.setFontSize(12);
-        pdf.setFont(undefined, "bold");
+        pdf.setFont("helvetica", "bold");
         pdf.text(`${index + 1}. Q: ${card.question}`, margin, yPosition);
         yPosition += 8;
 
-        pdf.setFont(undefined, "normal");
+        pdf.setFont("helvetica", "normal");
         const answerLines = pdf.splitTextToSize(`A: ${card.answer}`, 170);
         pdf.text(answerLines, margin, yPosition);
         yPosition += answerLines.length * 6 + 10;
@@ -67,7 +67,7 @@ export function exportToPDF(data: LearningContent) {
       }
 
       pdf.setFontSize(16);
-      pdf.setFont(undefined, "bold");
+      pdf.setFont("helvetica", "bold");
       pdf.text("Quiz Questions", margin, yPosition);
       yPosition += 15;
 
@@ -78,18 +78,18 @@ export function exportToPDF(data: LearningContent) {
         }
 
         pdf.setFontSize(12);
-        pdf.setFont(undefined, "bold");
+        pdf.setFont("helvetica", "bold");
         pdf.text(`${index + 1}. ${question.question}`, margin, yPosition);
         yPosition += 10;
 
         question.options.forEach((option, optIndex) => {
-          pdf.setFont(undefined, "normal");
+          pdf.setFont("helvetica", "normal");
           const marker = optIndex === question.correctAnswer ? "✓" : "○";
           pdf.text(`${marker} ${option}`, margin + 5, yPosition);
           yPosition += 6;
         });
 
-        pdf.setFont(undefined, "italic");
+        pdf.setFont("helvetica", "italic");
         const explanationLines = pdf.splitTextToSize(`Explanation: ${question.explanation}`, 160);
         pdf.text(explanationLines, margin + 5, yPosition);
         yPosition += explanationLines.length * 6 + 10;
