@@ -179,13 +179,44 @@ async function extractYouTubeTranscript(url: string): Promise<string> {
       throw new Error('Transcript is too short or empty. Please paste the content directly.');
     }
     
-    // Add video context
+    // Extract additional video metadata
     const title = videoInfo.basic_info.title || 'YouTube Video';
-    const finalContent = `Title: ${title}\n\nTranscript:\n${transcriptText}`;
+    const channel = videoInfo.basic_info.channel?.name || 'Unknown Channel';
+    const duration = videoInfo.basic_info.duration?.text || 'Unknown Duration';
+    const description = videoInfo.basic_info.short_description || '';
+    const viewCount = videoInfo.basic_info.view_count || 0;
+    const publishDate = videoInfo.basic_info.publish_date || '';
+    
+    // Create rich content with metadata and chapters
+    let finalContent = `YouTube Video Analysis\n\n`;
+    finalContent += `Title: ${title}\n`;
+    finalContent += `Channel: ${channel}\n`;
+    finalContent += `Duration: ${duration}\n`;
+    finalContent += `Views: ${viewCount.toLocaleString()}\n`;
+    if (publishDate) finalContent += `Published: ${publishDate}\n`;
+    finalContent += `URL: ${url}\n\n`;
+    
+    // Add description if available (first 500 chars)
+    if (description && description.length > 0) {
+      const shortDesc = description.length > 500 ? description.substring(0, 500) + '...' : description;
+      finalContent += `Description:\n${shortDesc}\n\n`;
+    }
+    
+    // Extract chapters/timestamps if available
+    const chapters = extractChapters(transcriptText);
+    if (chapters.length > 0) {
+      finalContent += `Key Sections:\n`;
+      chapters.forEach((chapter, index) => {
+        finalContent += `${index + 1}. ${chapter}\n`;
+      });
+      finalContent += `\n`;
+    }
+    
+    finalContent += `Full Transcript:\n${transcriptText}`;
     
     // Limit content length
-    if (finalContent.length > 15000) {
-      return finalContent.substring(0, 15000) + '...';
+    if (finalContent.length > 20000) {
+      return finalContent.substring(0, 20000) + '...';
     }
     
     return finalContent;
@@ -204,6 +235,32 @@ async function extractYouTubeTranscript(url: string): Promise<string> {
     }
     throw new Error('Failed to extract YouTube transcript. Please paste the content directly.');
   }
+}
+
+function extractChapters(transcript: string): string[] {
+  const chapters: string[] = [];
+  const lines = transcript.split('\n');
+  
+  // Look for common chapter indicators in transcript
+  const chapterPatterns = [
+    /^(\d{1,2}:\d{2})\s*-?\s*(.+)/,  // "12:34 - Chapter Title"
+    /^(Chapter \d+:?\s*.+)/i,         // "Chapter 1: Introduction"
+    /^(\d+\.\s*.+)/,                  // "1. Introduction"
+    /^(Introduction|Conclusion|Summary|Overview)/i  // Common section names
+  ];
+  
+  for (const line of lines) {
+    for (const pattern of chapterPatterns) {
+      const match = line.trim().match(pattern);
+      if (match && match[0].length > 5 && match[0].length < 100) {
+        chapters.push(match[0]);
+        if (chapters.length >= 10) break; // Limit to 10 chapters
+      }
+    }
+    if (chapters.length >= 10) break;
+  }
+  
+  return chapters;
 }
 
 export function validateContent(content: string): { isValid: boolean; error?: string } {

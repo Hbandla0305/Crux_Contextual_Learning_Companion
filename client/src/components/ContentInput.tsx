@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import ComplexitySlider from "./ComplexitySlider";
+import YouTubeEnhanced from "./YouTubeEnhanced";
 
 interface ContentInputProps {
   onContentProcessed: (data: any) => void;
@@ -15,6 +16,7 @@ export default function ContentInput({ onContentProcessed, setIsLoading }: Conte
   const [content, setContent] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [complexityLevel, setComplexityLevel] = useState(3);
+  const [activeTab, setActiveTab] = useState<"text" | "youtube" | "file">("text");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -141,9 +143,48 @@ export default function ContentInput({ onContentProcessed, setIsLoading }: Conte
 
       <Card className="shadow-lg">
         <CardContent className="p-8">
+          {/* Tab Navigation */}
+          <div className="flex space-x-1 mb-6 bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setActiveTab("text")}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                activeTab === "text"
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <i className="fas fa-edit mr-2"></i>
+              Text & URLs
+            </button>
+            <button
+              onClick={() => setActiveTab("youtube")}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                activeTab === "youtube"
+                  ? "bg-white text-red-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <i className="fab fa-youtube mr-2"></i>
+              YouTube
+            </button>
+            <button
+              onClick={() => setActiveTab("file")}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                activeTab === "file"
+                  ? "bg-white text-green-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <i className="fas fa-file-upload mr-2"></i>
+              File Upload
+            </button>
+          </div>
+
           <div className="space-y-6">
-            {/* Text Input */}
-            <div>
+            {activeTab === "text" && (
+              <>
+                {/* Text Input */}
+                <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <i className="fas fa-edit mr-2"></i>Content Input
               </label>
@@ -164,64 +205,88 @@ export default function ContentInput({ onContentProcessed, setIsLoading }: Conte
               </div>
             </div>
 
-            {/* File Upload */}
-            <div
-              className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition-colors cursor-pointer"
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onClick={() => fileInputRef.current?.click()}
-            >
+                {/* Process Button for Text */}
+                <Button
+                  onClick={processContent}
+                  disabled={(!content.trim()) || isOverLimit}
+                  className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 py-4 text-lg font-semibold transform hover:scale-[1.02] transition-all"
+                >
+                  <i className="fas fa-magic mr-2"></i>
+                  Create Learning Toolkit
+                </Button>
+              </>
+            )}
+
+            {activeTab === "youtube" && (
+              <YouTubeEnhanced 
+                onContentProcessed={onContentProcessed}
+                setIsLoading={setIsLoading}
+                complexityLevel={complexityLevel}
+              />
+            )}
+
+            {activeTab === "file" && (
+              <>
+                {/* File Upload */}
+                <div
+                  className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition-colors cursor-pointer"
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onClick={() => fileInputRef.current?.click()}
+                >
               <i className="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
               <p className="text-gray-600 mb-2">Drag and drop your files here</p>
               <p className="text-sm text-gray-500 mb-4">Supports PDF and TXT files</p>
               <Button variant="outline">Browse Files</Button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                accept=".pdf,.txt"
-                onChange={handleFileSelect}
-              />
-            </div>
-
-            {/* File Preview */}
-            {selectedFile && (
-              <div className="bg-gray-50 rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <i className="fas fa-file-alt text-primary"></i>
-                    <span className="text-sm font-medium text-gray-700">
-                      {selectedFile.name}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                    </span>
-                  </div>
-                  <button
-                    onClick={removeFile}
-                    className="text-red-500 hover:text-red-700 transition-colors"
-                  >
-                    <i className="fas fa-times"></i>
-                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.txt"
+                    onChange={handleFileSelect}
+                  />
                 </div>
-              </div>
+
+                {/* File Preview */}
+                {selectedFile && (
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <i className="fas fa-file-alt text-primary"></i>
+                        <span className="text-sm font-medium text-gray-700">
+                          {selectedFile.name}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                        </span>
+                      </div>
+                      <button
+                        onClick={removeFile}
+                        className="text-red-500 hover:text-red-700 transition-colors"
+                      >
+                        <i className="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Process Button for Files */}
+                <Button
+                  onClick={processContent}
+                  disabled={!selectedFile}
+                  className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 py-4 text-lg font-semibold transform hover:scale-[1.02] transition-all"
+                >
+                  <i className="fas fa-magic mr-2"></i>
+                  Process File
+                </Button>
+              </>
             )}
 
-            {/* Complexity Slider */}
+            {/* Complexity Slider - Always visible */}
             <ComplexitySlider 
               value={complexityLevel}
               onChange={setComplexityLevel}
             />
-
-            {/* Process Button */}
-            <Button
-              onClick={processContent}
-              disabled={(!content.trim() && !selectedFile) || isOverLimit}
-              className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 py-4 text-lg font-semibold transform hover:scale-[1.02] transition-all"
-            >
-              <i className="fas fa-magic mr-2"></i>
-              Create Learning Toolkit
-            </Button>
           </div>
         </CardContent>
       </Card>

@@ -100,6 +100,19 @@ Preferred communication style: Simple, everyday language.
 - Migration directory structure in place (`./migrations`)
 - Ready to switch from in-memory to Postgres storage
 
+## Recent Changes
+
+### July 25, 2025 - Enhanced YouTube Features & Security
+- **Content Complexity Slider**: Added 5-level adaptive difficulty system (Beginner to Academic)
+- **Enhanced Security**: Implemented DOMPurify sanitization to prevent XSS attacks
+- **YouTube Enhancements**: 
+  - Rich metadata extraction (title, channel, views, duration, description)
+  - Chapter/timestamp detection in transcripts
+  - Video thumbnail previews
+  - Tabbed interface for different input types
+  - Playlist processor framework (in development)
+- **User Experience**: Added first-time user onboarding guide with interactive walkthrough
+
 ## Notable Architectural Decisions
 
 ### Why Drizzle + Postgres Ready
@@ -123,3 +136,9 @@ Preferred communication style: Simple, everyday language.
 - Simplified deployment (single static bundle + API)
 - Real-time updates during AI content generation
 - Local storage for user preferences and progress
+
+### Why Content Complexity Levels
+- Adapts learning materials to user's knowledge level
+- Ensures accessibility for beginners while providing depth for experts
+- Uses tailored language and examples appropriate to each level
+- Enhances learning outcomes through personalized content delivery
