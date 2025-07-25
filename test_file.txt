@@ -1,0 +1,5 @@
+This is a test text file for uploading to the Learning Companion app. 
+
+The file contains sample content about renewable energy sources. Solar panels convert sunlight into electricity using photovoltaic cells. Wind turbines harness kinetic energy from wind to generate power. Hydroelectric dams use flowing water to produce electricity. These renewable sources are crucial for sustainable energy production and reducing carbon emissions.
+
+Geothermal energy taps into the earth's internal heat. Nuclear power, while not renewable, produces clean electricity with minimal greenhouse gas emissions during operation. Energy storage solutions like batteries are essential for managing intermittent renewable sources.
