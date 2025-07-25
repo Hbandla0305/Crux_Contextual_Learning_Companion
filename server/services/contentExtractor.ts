@@ -1,5 +1,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { Innertube } from 'youtubei.js';
+import { sanitizeContent, validateSecureContent } from '../utils/sanitize';
 
 export function detectContentType(input: string): 'text' | 'url' | 'youtube' {
   const trimmed = input.trim();
@@ -20,20 +22,35 @@ export function detectContentType(input: string): 'text' | 'url' | 'youtube' {
 }
 
 export async function extractContent(input: string, type: string): Promise<string> {
+  let content: string;
+  
   switch (type) {
     case 'text':
-      return input;
+      content = input;
+      break;
     
     case 'youtube':
-      // For now, return placeholder - in production would use YouTube API or transcript service
-      throw new Error('YouTube transcript extraction not yet implemented. Please paste the transcript text directly.');
+      content = await extractYouTubeTranscript(input.trim());
+      break;
     
     case 'url':
-      return await extractUrlContent(input.trim());
+      content = await extractUrlContent(input.trim());
+      break;
     
     default:
-      return input;
+      content = input;
   }
+
+  // Sanitize all content for security
+  const sanitized = sanitizeContent(content);
+  
+  // Validate for security
+  const validation = validateSecureContent(sanitized);
+  if (!validation.isValid) {
+    throw new Error(validation.error);
+  }
+  
+  return sanitized;
 }
 
 async function extractUrlContent(url: string): Promise<string> {
@@ -117,6 +134,75 @@ async function extractUrlContent(url: string): Promise<string> {
       }
     }
     throw new Error('Failed to extract content from the URL. Please paste the content directly.');
+  }
+}
+
+async function extractYouTubeTranscript(url: string): Promise<string> {
+  try {
+    // Extract video ID from URL
+    const videoIdMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/);
+    if (!videoIdMatch) {
+      throw new Error('Invalid YouTube URL format');
+    }
+    
+    const videoId = videoIdMatch[1];
+    
+    // Initialize YouTube client
+    const youtube = await Innertube.create({
+      lang: 'en',
+      location: 'US',
+      enable_session_cache: false
+    });
+    
+    // Get video info
+    const videoInfo = await youtube.getInfo(videoId);
+    
+    if (!videoInfo) {
+      throw new Error('Video not found or is private');
+    }
+    
+    // Get transcript
+    const transcriptData = await videoInfo.getTranscript();
+    
+    if (!transcriptData) {
+      throw new Error('No transcript available for this video. Please ensure the video has captions enabled.');
+    }
+    
+    // Extract text from transcript segments
+    const transcriptText = transcriptData.transcript.content.body.initial_segments
+      .map((segment: any) => segment.snippet.text)
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    if (!transcriptText || transcriptText.length < 50) {
+      throw new Error('Transcript is too short or empty. Please paste the content directly.');
+    }
+    
+    // Add video context
+    const title = videoInfo.basic_info.title || 'YouTube Video';
+    const finalContent = `Title: ${title}\n\nTranscript:\n${transcriptText}`;
+    
+    // Limit content length
+    if (finalContent.length > 15000) {
+      return finalContent.substring(0, 15000) + '...';
+    }
+    
+    return finalContent;
+    
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message.includes('No transcript available')) {
+        throw error; // Re-throw our custom error
+      } else if (error.message.includes('Video not found')) {
+        throw new Error('Video not found, is private, or has been removed. Please check the URL or paste the content directly.');
+      } else if (error.message.includes('Invalid YouTube URL')) {
+        throw error; // Re-throw our custom error
+      } else {
+        throw new Error('Failed to extract YouTube transcript. This may be due to regional restrictions or unavailable captions. Please paste the transcript text directly.');
+      }
+    }
+    throw new Error('Failed to extract YouTube transcript. Please paste the content directly.');
   }
 }
 

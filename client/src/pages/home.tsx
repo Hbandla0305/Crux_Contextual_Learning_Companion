@@ -6,6 +6,7 @@ import Flashcards from "@/components/Flashcards";
 import Quiz from "@/components/Quiz";
 import MindMap from "@/components/MindMap";
 import ExportSection from "@/components/ExportSection";
+import OnboardingGuide from "@/components/OnboardingGuide";
 import { Card, CardContent } from "@/components/ui/card";
 import type { LearningContent } from "@shared/schema";
 
@@ -27,6 +28,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
+      <OnboardingGuide />
       
       <ContentInput 
         onContentProcessed={handleContentProcessed}

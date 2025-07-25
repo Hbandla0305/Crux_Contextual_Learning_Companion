@@ -20,6 +20,7 @@ export class MemStorage implements IStorage {
     const content: LearningContent = {
       ...insertContent,
       id,
+      complexityLevel: insertContent.complexityLevel || 3,
       summary: null,
       flashcards: null,
       quiz: null,

@@ -6,6 +6,7 @@ export const learningContent = pgTable("learning_content", {
   id: serial("id").primaryKey(),
   originalContent: text("original_content").notNull(),
   contentType: text("content_type").notNull(), // 'text', 'url', 'youtube', 'pdf'
+  complexityLevel: integer("complexity_level").default(3), // 1=beginner, 2=intermediate, 3=advanced, 4=expert, 5=academic
   summary: text("summary"),
   flashcards: json("flashcards").$type<Array<{question: string, answer: string}>>(),
   quiz: json("quiz").$type<Array<{question: string, options: string[], correctAnswer: number, explanation: string}>>(),
@@ -16,6 +17,7 @@ export const learningContent = pgTable("learning_content", {
 export const insertLearningContentSchema = createInsertSchema(learningContent).pick({
   originalContent: true,
   contentType: true,
+  complexityLevel: true,
 });
 
 export type InsertLearningContent = z.infer<typeof insertLearningContentSchema>;

@@ -14,7 +14,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Process content and generate learning materials
   app.post("/api/process-content", async (req, res) => {
     try {
-      const { content } = req.body;
+      const { content, complexityLevel = 3 } = req.body;
       
       if (!content) {
         return res.status(400).json({ error: "Content is required" });
@@ -39,16 +39,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create initial learning content record
       const learningContent = await storage.createLearningContent({
         originalContent: extractedContent,
-        contentType
+        contentType,
+        complexityLevel
       });
 
       // Generate AI content in parallel
       try {
         const [summary, flashcards, quiz, mindMap] = await Promise.all([
-          generateSummary(extractedContent),
-          generateFlashcards(extractedContent),
-          generateQuiz(extractedContent),
-          generateMindMap(extractedContent)
+          generateSummary(extractedContent, complexityLevel),
+          generateFlashcards(extractedContent, complexityLevel),
+          generateQuiz(extractedContent, complexityLevel),
+          generateMindMap(extractedContent, complexityLevel)
         ]);
 
         // Update the record with generated content

@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import ComplexitySlider from "./ComplexitySlider";
 
 interface ContentInputProps {
   onContentProcessed: (data: any) => void;
@@ -13,6 +14,7 @@ interface ContentInputProps {
 export default function ContentInput({ onContentProcessed, setIsLoading }: ContentInputProps) {
   const [content, setContent] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [complexityLevel, setComplexityLevel] = useState(3);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -89,8 +91,13 @@ export default function ContentInput({ onContentProcessed, setIsLoading }: Conte
         });
       } else {
         // Process text content
-        response = await apiRequest('POST', '/api/process-content', {
-          content: content.trim()
+        response = await fetch('/api/process-content', {
+          method: 'POST',
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            content: content.trim(),
+            complexityLevel 
+          })
         });
       }
 
@@ -199,6 +206,12 @@ export default function ContentInput({ onContentProcessed, setIsLoading }: Conte
                 </div>
               </div>
             )}
+
+            {/* Complexity Slider */}
+            <ComplexitySlider 
+              value={complexityLevel}
+              onChange={setComplexityLevel}
+            />
 
             {/* Process Button */}
             <Button
