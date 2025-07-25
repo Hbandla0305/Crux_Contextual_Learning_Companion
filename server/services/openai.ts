@@ -139,3 +139,105 @@ export async function generateMindMap(content: string, complexityLevel: number =
     throw new Error(`Failed to generate mind map: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
+
+export async function generateLearningPath(content: string, complexityLevel: number = 3): Promise<any> {
+  try {
+    const complexityPrompts = {
+      1: "Create a beginner-friendly learning path with simple steps. Focus on foundational concepts and basic understanding. Use everyday language and practical examples.",
+      2: "Create an intermediate learning path that builds systematically. Include some technical concepts but keep explanations accessible. Balance theory with practice.",
+      3: "Create an advanced learning path with sophisticated progression. Include technical depth and complex concepts. Focus on mastery and application.",
+      4: "Create an expert-level learning path with specialized knowledge. Include advanced techniques and industry-specific skills. Emphasize expertise development.", 
+      5: "Create an academic-level learning path suitable for research or graduate study. Include theoretical frameworks, research methodologies, and scholarly approaches."
+    };
+
+    const difficultyPrompt = complexityPrompts[complexityLevel as keyof typeof complexityPrompts] || complexityPrompts[3];
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert learning path designer. ${difficultyPrompt} Create a personalized learning path with prerequisites, current topic analysis, next steps, and recommended study plan. Respond with JSON in this format: {"currentTopic": "...", "prerequisiteTopics": ["topic1", "topic2"], "nextTopics": ["topic1", "topic2"], "recommendedSteps": [{"title": "...", "description": "...", "estimatedTime": "...", "difficulty": 1-5, "resources": ["resource1"]}], "skillLevel": "...", "totalEstimatedTime": "..."}`
+        },
+        {
+          role: "user", 
+          content: `Create a learning path for this content:\n\n${content}`
+        }
+      ],
+      response_format: { type: "json_object" },
+    });
+
+    const result = JSON.parse(response.choices[0].message.content || "{}");
+    return result || {};
+  } catch (error) {
+    throw new Error(`Failed to generate learning path: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function generateAdditionalResources(content: string, complexityLevel: number = 3): Promise<any[]> {
+  try {
+    const complexityPrompts = {
+      1: "Recommend beginner-friendly resources like introductory articles, basic tutorials, and beginner books. Focus on accessible, well-explained content.",
+      2: "Recommend intermediate resources including detailed articles, practical tutorials, and comprehensive guides. Balance theory with hands-on learning.",
+      3: "Recommend advanced resources such as expert articles, advanced courses, technical documentation, and professional materials.",
+      4: "Recommend expert-level resources including specialized publications, advanced courses, industry reports, and professional development materials.",
+      5: "Recommend academic resources such as research papers, scholarly articles, advanced textbooks, and peer-reviewed publications."
+    };
+
+    const difficultyPrompt = complexityPrompts[complexityLevel as keyof typeof complexityPrompts] || complexityPrompts[3];
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", 
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert at curating educational resources. ${difficultyPrompt} Find 5-8 high-quality resources that complement the topic. Include diverse resource types (articles, videos, books, courses, tutorials). Provide realistic URLs when possible, or use example.com for demonstrations. Respond with JSON in this format: {"resources": [{"title": "...", "type": "article|video|book|course|tutorial|documentation", "url": "...", "description": "...", "difficulty": 1-5, "estimatedTime": "...", "rating": 4.5}]}`
+        },
+        {
+          role: "user",
+          content: `Find additional learning resources for this topic:\n\n${content}`
+        }
+      ],
+      response_format: { type: "json_object" },
+    });
+
+    const result = JSON.parse(response.choices[0].message.content || "{}");
+    return result.resources || [];
+  } catch (error) {
+    throw new Error(`Failed to generate resources: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function generateKeyTerms(content: string, complexityLevel: number = 3): Promise<any[]> {
+  try {
+    const complexityPrompts = {
+      1: "Identify basic terms and concepts. Provide simple definitions with everyday examples. Focus on fundamental vocabulary.",
+      2: "Identify important terms with clear explanations. Include some technical terms but keep definitions accessible.",
+      3: "Identify key terms and concepts with professional definitions. Include technical terminology and industry-specific language.",
+      4: "Identify sophisticated terms and specialized concepts. Provide expert-level definitions with nuanced explanations.",
+      5: "Identify academic and research-level terminology. Provide scholarly definitions with theoretical context and methodological considerations."
+    };
+
+    const difficultyPrompt = complexityPrompts[complexityLevel as keyof typeof complexityPrompts] || complexityPrompts[3];
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system", 
+          content: `You are an expert at identifying and explaining key terms. ${difficultyPrompt} Extract 8-12 important terms with definitions, categories, related terms, and examples. Respond with JSON in this format: {"keyTerms": [{"term": "...", "definition": "...", "category": "...", "relatedTerms": ["term1", "term2"], "examples": ["example1"], "complexity": 1-5}]}`
+        },
+        {
+          role: "user",
+          content: `Extract and define key terms from this content:\n\n${content}`
+        }
+      ],
+      response_format: { type: "json_object" },
+    });
+
+    const result = JSON.parse(response.choices[0].message.content || "{}");
+    return result.keyTerms || [];
+  } catch (error) {
+    throw new Error(`Failed to generate key terms: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}

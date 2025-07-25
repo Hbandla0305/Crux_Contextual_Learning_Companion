@@ -7,6 +7,9 @@ import Quiz from "@/components/Quiz";
 import MindMap from "@/components/MindMap";
 import ExportSection from "@/components/ExportSection";
 import OnboardingGuide from "@/components/OnboardingGuide";
+import LearningPath from "@/components/LearningPath";
+import AdditionalResources from "@/components/AdditionalResources";
+import KeyTerms from "@/components/KeyTerms";
 import { Card, CardContent } from "@/components/ui/card";
 import type { LearningContent } from "@shared/schema";
 
@@ -70,9 +73,12 @@ export default function Home() {
           </section>
 
           <Summary summary={learningData.summary || ""} />
+          <LearningPath learningPath={learningData.learningPath} />
+          <KeyTerms keyTerms={learningData.keyTerms || []} />
           <Flashcards flashcards={learningData.flashcards || []} />
           <Quiz quiz={learningData.quiz || []} />
           <MindMap mindMap={learningData.mindMap || { centralTopic: "", branches: [] }} />
+          <AdditionalResources resources={learningData.additionalResources || []} />
           <ExportSection data={learningData} />
         </>
       )}

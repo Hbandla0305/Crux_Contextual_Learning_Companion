@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertLearningContentSchema } from "@shared/schema";
-import { generateSummary, generateFlashcards, generateQuiz, generateMindMap } from "./services/openai";
+import { generateSummary, generateFlashcards, generateQuiz, generateMindMap, generateLearningPath, generateAdditionalResources, generateKeyTerms } from "./services/openai";
 import { detectContentType, extractContent, validateContent } from "./services/contentExtractor";
 import multer from "multer";
 import fs from "fs";
@@ -45,11 +45,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Generate AI content in parallel
       try {
-        const [summary, flashcards, quiz, mindMap] = await Promise.all([
+        const [summary, flashcards, quiz, mindMap, learningPath, additionalResources, keyTerms] = await Promise.all([
           generateSummary(extractedContent, complexityLevel),
           generateFlashcards(extractedContent, complexityLevel),
           generateQuiz(extractedContent, complexityLevel),
-          generateMindMap(extractedContent, complexityLevel)
+          generateMindMap(extractedContent, complexityLevel),
+          generateLearningPath(extractedContent, complexityLevel),
+          generateAdditionalResources(extractedContent, complexityLevel),
+          generateKeyTerms(extractedContent, complexityLevel)
         ]);
 
         // Update the record with generated content
@@ -57,7 +60,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           summary,
           flashcards,
           quiz,
-          mindMap
+          mindMap,
+          learningPath,
+          additionalResources,
+          keyTerms
         });
 
         res.json(updatedContent);
