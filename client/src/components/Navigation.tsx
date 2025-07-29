@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 
 export default function Navigation() {
-  const [activeSection, setActiveSection] = useState("input");
+  const [activeSection, setActiveSection] = useState("content-input");
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["input", "summary", "flashcards", "quiz", "mindmap"];
+      const sections = ["content-input", "summary", "learning-path", "key-terms", "flashcards", "quiz", "mind-map", "additional-resources"];
       const current = sections.find(section => {
         const element = document.getElementById(section);
         if (element) {
@@ -33,18 +33,26 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-              <i className="fas fa-brain text-white text-sm"></i>
+            <img 
+              src="/attached_assets/crux Logo_1753820555218.png" 
+              alt="Crux Logo" 
+              className="w-8 h-8 object-contain"
+            />
+            <div>
+              <h1 className="text-xl font-semibold text-gray-900">Crux</h1>
+              <p className="text-xs text-gray-600 -mt-1">AI-powered contextual learning companion</p>
             </div>
-            <h1 className="text-xl font-semibold text-gray-900">Learning Companion</h1>
           </div>
           <div className="hidden md:flex space-x-6">
             {[
-              { id: "input", label: "Input" },
+              { id: "content-input", label: "Input" },
               { id: "summary", label: "Summary" },
+              { id: "learning-path", label: "Path" },
+              { id: "key-terms", label: "Terms" },
               { id: "flashcards", label: "Flashcards" },
               { id: "quiz", label: "Quiz" },
-              { id: "mindmap", label: "Mind Map" }
+              { id: "mind-map", label: "Mind Map" },
+              { id: "additional-resources", label: "Resources" }
             ].map(({ id, label }) => (
               <button
                 key={id}

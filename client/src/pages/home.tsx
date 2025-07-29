@@ -65,8 +65,8 @@ export default function Home() {
                   <i className="fas fa-check text-white"></i>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Here's your learning kit!</h3>
-                  <p className="text-gray-600">Your content has been transformed into 4 powerful learning tools.</p>
+                  <h3 className="text-lg font-semibold text-gray-900">Here's your comprehensive learning kit!</h3>
+                  <p className="text-gray-600">Your content has been transformed into 7 powerful learning tools including personalized paths and curated resources.</p>
                 </div>
               </div>
             </div>
@@ -84,7 +84,7 @@ export default function Home() {
       )}
 
       {/* Privacy Notice */}
-      <footer className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-gray-100 rounded-xl p-6 text-center">
           <div className="flex items-center justify-center space-x-2 mb-2">
             <i className="fas fa-shield-alt text-green-600"></i>
@@ -92,6 +92,23 @@ export default function Home() {
           </div>
           <p className="text-sm text-gray-600">
             All content processed securely via OpenAI. No data is stored on our servers. Your learning materials stay private.
+          </p>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-50 border-t border-gray-200 py-8 mt-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-gray-600">
+            Built by{" "}
+            <a 
+              href="https://hrudvibandla.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            >
+              Hrudvi Bandla
+            </a>
           </p>
         </div>
       </footer>
