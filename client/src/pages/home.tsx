@@ -73,7 +73,7 @@ export default function Home() {
           </section>
 
           <Summary summary={learningData.summary || ""} />
-          <LearningPath learningPath={learningData.learningPath} />
+          <LearningPath learningPath={learningData.learningPath || { currentTopic: "", prerequisiteTopics: [], nextTopics: [], recommendedSteps: [], skillLevel: "", totalEstimatedTime: "" }} />
           <KeyTerms keyTerms={learningData.keyTerms || []} />
           <Flashcards flashcards={learningData.flashcards || []} />
           <Quiz quiz={learningData.quiz || []} />

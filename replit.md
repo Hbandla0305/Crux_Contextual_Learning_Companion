@@ -1,8 +1,8 @@
-# Learning Companion - replit.md
+# Crux - replit.md
 
 ## Overview
 
-Learning Companion is a modern React + Express web application that transforms any text content into comprehensive learning materials. Users can input text, URLs, or upload files, and the application generates summaries, flashcards, quizzes, and mind maps using AI. The app features a clean, modern UI built with shadcn/ui components and provides export functionality for study materials.
+Crux is a modern React + Express web application that serves as an AI-powered contextual learning companion. It transforms any text content into comprehensive learning materials including summaries, personalized learning paths, interactive key terms, flashcards, quizzes, mind maps, and curated additional resources. The app features a clean, modern UI built with shadcn/ui components and provides export functionality for study materials.
 
 ## User Preferences
 
@@ -101,6 +101,19 @@ Preferred communication style: Simple, everyday language.
 - Ready to switch from in-memory to Postgres storage
 
 ## Recent Changes
+
+### July 29, 2025 - Crux Rebranding & Enhanced Learning Features
+- **Rebranding**: App renamed to "Crux" with "AI-powered contextual learning companion" tagline
+- **Enhanced Learning Features**:
+  - Personalized learning path recommendations with step-by-step guidance
+  - Additional resources discovery with curated links and difficulty ratings
+  - Interactive key terms dictionary with search and categorization
+  - Comprehensive AI processing for all enhanced learning materials
+- **UI Improvements**: 
+  - Crux logo integration in header navigation
+  - Updated navigation with all 7 learning sections
+  - Footer attribution to Hrudvi Bandla with portfolio link
+  - Enhanced success messages reflecting comprehensive toolkit
 
 ### July 25, 2025 - Enhanced YouTube Features & Security
 - **Content Complexity Slider**: Added 5-level adaptive difficulty system (Beginner to Academic)

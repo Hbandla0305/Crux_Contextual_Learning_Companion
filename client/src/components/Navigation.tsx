@@ -34,7 +34,7 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-3">
             <img 
-              src="/attached_assets/crux Logo_1753820555218.png" 
+              src="/crux-logo.png" 
               alt="Crux Logo" 
               className="w-8 h-8 object-contain"
             />
