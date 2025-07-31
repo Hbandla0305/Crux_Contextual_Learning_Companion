@@ -76,7 +76,7 @@ export default function Flashcards({ flashcards }: FlashcardsProps) {
             {flashcards.map((card, index) => (
               <div
                 key={index}
-                className="flip-card h-40 cursor-pointer perspective-1000"
+                className="flip-card h-60 cursor-pointer perspective-1000"
                 onClick={() => flipCard(index)}
               >
                 <div
@@ -96,7 +96,9 @@ export default function Flashcards({ flashcards }: FlashcardsProps) {
                       </span>
                       <i className="fas fa-refresh text-blue-400"></i>
                     </div>
-                    <p className="text-gray-800 font-medium text-sm leading-tight overflow-hidden break-words">{card.question}</p>
+                    <div className="flex-1 overflow-y-auto">
+                      <p className="text-gray-800 font-medium text-sm leading-relaxed break-words">{card.question}</p>
+                    </div>
                   </div>
 
                   {/* Back */}
@@ -107,7 +109,9 @@ export default function Flashcards({ flashcards }: FlashcardsProps) {
                       </span>
                       <i className="fas fa-check text-green-400"></i>
                     </div>
-                    <p className="text-gray-800 text-sm mb-4 leading-tight overflow-hidden break-words">{card.answer}</p>
+                    <div className="flex-1 overflow-y-auto mb-4">
+                      <p className="text-gray-800 text-sm leading-relaxed break-words">{card.answer}</p>
+                    </div>
                     <div className="flex space-x-2">
                       <Button
                         size="sm"

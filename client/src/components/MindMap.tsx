@@ -51,9 +51,9 @@ export default function MindMap({ mindMap }: MindMapProps) {
   // Calculate positions for branches in a circle around the center
   const calculateBranchPosition = (index: number, total: number) => {
     const angle = (2 * Math.PI * index) / total;
-    const radius = 120;
+    const radius = 140;
     const centerX = 400;
-    const centerY = 200;
+    const centerY = 175;
     
     return {
       x: centerX + radius * Math.cos(angle),
@@ -87,18 +87,18 @@ export default function MindMap({ mindMap }: MindMapProps) {
             >
               {/* Central Node */}
               <g className="central-node">
-                <circle cx="400" cy="200" r="60" fill="#6366F1" stroke="#4F46E5" strokeWidth="3" />
+                <circle cx="400" cy="175" r="50" fill="#6366F1" stroke="#4F46E5" strokeWidth="3" />
                 <text
                   x="400"
-                  y="200"
+                  y="175"
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill="white"
-                  fontSize="14"
+                  fontSize="12"
                   fontWeight="bold"
                 >
-                  {mindMap.centralTopic.length > 15 
-                    ? mindMap.centralTopic.substring(0, 15) + "..."
+                  {mindMap.centralTopic.length > 12 
+                    ? mindMap.centralTopic.substring(0, 12) + "..."
                     : mindMap.centralTopic
                   }
                 </text>
@@ -114,7 +114,7 @@ export default function MindMap({ mindMap }: MindMapProps) {
                     {/* Line to central node */}
                     <line
                       x1="400"
-                      y1="200"
+                      y1="175"
                       x2={position.x}
                       y2={position.y}
                       stroke={color}
@@ -125,7 +125,7 @@ export default function MindMap({ mindMap }: MindMapProps) {
                     <circle
                       cx={position.x}
                       cy={position.y}
-                      r="40"
+                      r="35"
                       fill={color}
                       stroke={color}
                       strokeWidth="2"
@@ -139,11 +139,11 @@ export default function MindMap({ mindMap }: MindMapProps) {
                       textAnchor="middle"
                       dominantBaseline="central"
                       fill="white"
-                      fontSize="11"
+                      fontSize="10"
                       fontWeight="600"
                     >
-                      {branch.topic.length > 12 
-                        ? branch.topic.substring(0, 12) + "..."
+                      {branch.topic.length > 8 
+                        ? branch.topic.substring(0, 8) + "..."
                         : branch.topic
                       }
                     </text>
