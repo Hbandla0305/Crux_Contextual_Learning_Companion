@@ -72,11 +72,11 @@ export default function Flashcards({ flashcards }: FlashcardsProps) {
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             {flashcards.map((card, index) => (
               <div
                 key={index}
-                className="flip-card h-60 cursor-pointer perspective-1000"
+                className="flip-card h-80 cursor-pointer perspective-1000"
                 onClick={() => flipCard(index)}
               >
                 <div
@@ -88,31 +88,31 @@ export default function Flashcards({ flashcards }: FlashcardsProps) {
                   <div
                     className={`flip-card-front absolute inset-0 w-full h-full backface-hidden bg-gradient-to-br ${
                       cardColors[index % cardColors.length]
-                    } rounded-xl p-6 border`}
+                    } rounded-xl p-4 border flex flex-col`}
                   >
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-3 flex-shrink-0">
                       <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
                         Question
                       </span>
                       <i className="fas fa-refresh text-blue-400"></i>
                     </div>
-                    <div className="flex-1 overflow-y-auto">
-                      <p className="text-gray-800 font-medium text-sm leading-relaxed break-words">{card.question}</p>
+                    <div className="flex-1 overflow-y-auto min-h-0">
+                      <p className="text-gray-800 font-medium text-sm leading-relaxed break-words whitespace-pre-wrap">{card.question}</p>
                     </div>
                   </div>
 
                   {/* Back */}
-                  <div className="flip-card-back absolute inset-0 w-full h-full backface-hidden bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200 rotate-y-180">
-                    <div className="flex items-center justify-between mb-4">
+                  <div className="flip-card-back absolute inset-0 w-full h-full backface-hidden bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200 rotate-y-180 flex flex-col">
+                    <div className="flex items-center justify-between mb-3 flex-shrink-0">
                       <span className="text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
                         Answer
                       </span>
                       <i className="fas fa-check text-green-400"></i>
                     </div>
-                    <div className="flex-1 overflow-y-auto mb-4">
-                      <p className="text-gray-800 text-sm leading-relaxed break-words">{card.answer}</p>
+                    <div className="flex-1 overflow-y-auto mb-3 min-h-0">
+                      <p className="text-gray-800 text-sm leading-relaxed break-words whitespace-pre-wrap">{card.answer}</p>
                     </div>
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 flex-shrink-0">
                       <Button
                         size="sm"
                         onClick={(e) => {
