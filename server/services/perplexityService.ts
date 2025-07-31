@@ -39,7 +39,7 @@ export async function findLearningResources(topic: string, complexityLevel: numb
 
     const difficultyPrompt = complexityPrompts[complexityLevel as keyof typeof complexityPrompts] || complexityPrompts[3];
 
-    const searchQuery = `Find ${difficultyPrompt} for learning ${topic}. Include official documentation, tutorials, guides, API references, examples, and educational resources. Focus on authoritative sources and practical learning materials.`;
+    const searchQuery = `Find ${difficultyPrompt} for learning about ${topic}. Look for official documentation, comprehensive tutorials, practical guides, examples, and educational resources from authoritative sources.`;
 
     const response = await axios.post<PerplexityResponse>(
       'https://api.perplexity.ai/chat/completions',
@@ -48,7 +48,7 @@ export async function findLearningResources(topic: string, complexityLevel: numb
         messages: [
           {
             role: 'system',
-            content: `You are an expert educational resource curator. Find high-quality learning resources including official documentation, tutorials, guides, API references, examples, and educational materials. Prioritize authoritative sources, official documentation, and practical learning materials. Respond with a JSON array of resources in this exact format: [{"title": "Resource Title", "url": "https://example.com", "description": "Brief description of what this resource covers", "type": "documentation|guide|api-reference|tutorial|example|article|video|course", "difficulty": 1-5, "estimatedTime": "5-15 mins", "source": "domain.com"}]`
+            content: `You are an expert at finding educational resources. Search for high-quality learning materials and respond with useful URLs and information. Focus on finding real, actionable resources from authoritative sources. Be precise and concise.`
           },
           {
             role: 'user',
@@ -95,6 +95,12 @@ export async function findLearningResources(topic: string, complexityLevel: numb
       resources = extractResourcesFromContent(content, response.data.citations || [], topic, complexityLevel);
     }
 
+    // Ensure we have some resources from citations even if JSON parsing worked
+    if ((resources.length === 0 || resources.length < 3) && response.data.citations) {
+      const citationResources = extractResourcesFromContent(content, response.data.citations, topic, complexityLevel);
+      resources = [...resources, ...citationResources].slice(0, 8);
+    }
+
     // Validate and format resources
     const formattedResources: LearningResource[] = resources
       .filter(resource => resource.url && resource.title)
@@ -116,12 +122,17 @@ export async function findLearningResources(topic: string, complexityLevel: numb
   } catch (error) {
     console.error('Error with Perplexity API:', error);
     
-    // Return fallback resources based on citations if available
-    if (error instanceof Error && error.message.includes('citations')) {
-      return [];
+    // Log the specific error for debugging
+    if (error.response) {
+      console.error('Perplexity API Response Error:', {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        data: error.response.data
+      });
     }
     
-    throw error;
+    // Don't throw, let the fallback system handle it
+    return [];
   }
 }
 

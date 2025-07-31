@@ -100,16 +100,16 @@ async function discoverDocumentationRelated(url: URL, topic: string, strategy: a
         const href = $(element).attr('href');
         const text = $(element).text().trim();
         
-        if (href && text && !foundLinks.has(href)) {
+        if (href && text && !foundLinks.has(href) && text.trim().length > 3) {
           const fullUrl = href.startsWith('http') ? href : `${baseUrl}${href.startsWith('/') ? '' : '/'}${href}`;
           
-          // Filter for relevant content
-          if (isRelevantLink(fullUrl, text, topic) && fullUrl !== url.toString()) {
+          // Filter for relevant content and avoid generic/duplicate titles
+          if (isRelevantLink(fullUrl, text, topic) && fullUrl !== url.toString() && !isGenericTitle(text)) {
             foundLinks.add(href);
             resources.push({
-              title: text,
+              title: enhanceTitle(text, topic),
               url: fullUrl,
-              description: generateDescription(text, fullUrl),
+              description: generateDescription(text, fullUrl, topic),
               type: determineResourceType(fullUrl, text),
               difficulty: estimateDifficulty(text, fullUrl),
               estimatedTime: estimateReadingTime(text),
@@ -276,19 +276,20 @@ function generateFallbackDocumentationUrls(url: URL, topic: string): RelatedReso
   const baseUrl = `${url.protocol}//${url.hostname}`;
   const resources: RelatedResource[] = [];
   
+  // More specific fallback resources based on topic
   const fallbackPaths = [
-    { path: '/docs/', title: 'Documentation', type: 'documentation' as const },
-    { path: '/guides/', title: 'Guides', type: 'guide' as const },
-    { path: '/api/', title: 'API Reference', type: 'api-reference' as const },
-    { path: '/examples/', title: 'Examples', type: 'example' as const },
-    { path: '/tutorials/', title: 'Tutorials', type: 'tutorial' as const }
+    { path: '/blog/', title: `${topic} Articles`, type: 'article' as const },
+    { path: '/guides/', title: `${topic} Guides`, type: 'guide' as const },
+    { path: '/resources/', title: `${topic} Resources`, type: 'documentation' as const },
+    { path: '/learn/', title: `Learn ${topic}`, type: 'tutorial' as const },
+    { path: '/help/', title: `${topic} Help Center`, type: 'documentation' as const }
   ];
   
   for (const { path, title, type } of fallbackPaths) {
     resources.push({
       title,
       url: `${baseUrl}${path}`,
-      description: `${title} for ${topic}`,
+      description: `Comprehensive ${title.toLowerCase()} to help you master ${topic}`,
       type,
       difficulty: 3,
       estimatedTime: '10-20 mins',
@@ -373,8 +374,37 @@ function formatPathToTitle(path: string, prefix?: string): string {
   return prefix ? `${prefix} ${title}` : title;
 }
 
-function generateDescription(title: string, url: string): string {
+function generateDescription(title: string, url: string, topic?: string): string {
   const urlParts = new URL(url).pathname.split('/').filter(Boolean);
   const section = urlParts[urlParts.length - 2] || urlParts[urlParts.length - 1] || 'documentation';
-  return `Explore ${title.toLowerCase()} in the ${section} section for comprehensive information and examples.`;
+  const topicRef = topic ? ` about ${topic}` : '';
+  return `Discover valuable insights${topicRef} in this ${section} resource covering ${title.toLowerCase()}.`;
+}
+
+function isGenericTitle(title: string): boolean {
+  const genericPatterns = [
+    /^blog\s*blog$/i,
+    /^guides?\s*guides?$/i,
+    /^docs?\s*docs?$/i,
+    /^home$/i,
+    /^main$/i,
+    /^index$/i
+  ];
+  
+  return genericPatterns.some(pattern => pattern.test(title.trim()));
+}
+
+function enhanceTitle(title: string, topic: string): string {
+  // If title is too generic, make it more specific
+  if (title.toLowerCase().includes('blog') && !title.toLowerCase().includes(topic.toLowerCase())) {
+    return `${topic} Blog Articles`;
+  }
+  if (title.toLowerCase().includes('guide') && !title.toLowerCase().includes(topic.toLowerCase())) {
+    return `${topic} Guides`;
+  }
+  if (title.toLowerCase().includes('tutorial') && !title.toLowerCase().includes(topic.toLowerCase())) {
+    return `${topic} Tutorials`;
+  }
+  
+  return title;
 }
