@@ -174,22 +174,23 @@ export async function generateLearningPath(content: string, complexityLevel: num
   }
 }
 
-export async function generateAdditionalResources(content: string, complexityLevel: number = 3): Promise<any[]> {
+export async function generateAdditionalResources(content: string, complexityLevel: number = 3, originalUrl?: string): Promise<any[]> {
   try {
-    // Import the web search service
-    const { searchEducationalResources } = await import('./webSearch');
+    // If we have an original URL, try to discover related content from the same source
+    if (originalUrl && isValidUrl(originalUrl)) {
+      const { discoverRelatedContent } = await import('./relatedContentDiscovery');
+      const topic = extractMainTopic(content);
+      const relatedResources = await discoverRelatedContent(originalUrl, topic);
+      
+      if (relatedResources.length > 0) {
+        console.log(`Found ${relatedResources.length} related resources from the same domain`);
+        return relatedResources;
+      }
+    }
     
-    // Extract main topic from content
+    // Fallback: Generate contextual resources using AI
     const topic = extractMainTopic(content);
     
-    // Search for real educational resources
-    const searchResults = await searchEducationalResources(topic, complexityLevel);
-    
-    return searchResults;
-  } catch (error) {
-    console.error('Error generating additional resources:', error);
-    
-    // Fallback to original AI-generated resources if web search fails
     const complexityPrompts = {
       1: "Recommend beginner-friendly resources like introductory articles, basic tutorials, and beginner books. Focus on accessible, well-explained content.",
       2: "Recommend intermediate resources including detailed articles, practical tutorials, and comprehensive guides. Balance theory with hands-on learning.",
@@ -205,11 +206,11 @@ export async function generateAdditionalResources(content: string, complexityLev
       messages: [
         {
           role: "system",
-          content: `You are an expert at curating educational resources. ${difficultyPrompt} Find 5-8 high-quality resources that complement the topic. Include diverse resource types (articles, videos, books, courses, tutorials). For URLs, use well-known educational platforms like: khan academy, coursera, edx, youtube, medium, github, wikipedia, official documentation sites, or academic sources. Make URLs realistic and educational. Respond with JSON in this format: {"resources": [{"title": "...", "type": "article|video|book|course|tutorial|documentation", "url": "...", "description": "...", "difficulty": 1-5, "estimatedTime": "...", "rating": 4.5}]}`
+          content: `You are an expert at curating educational resources. ${difficultyPrompt} Find 5-8 high-quality resources that complement the topic. Focus on official documentation, reputable educational platforms, and authoritative sources. For URLs, prioritize: official documentation sites, github repositories, well-known educational platforms (khan academy, coursera, edx), and authoritative technical sources. Make URLs realistic and educational. Respond with JSON in this format: {"resources": [{"title": "...", "type": "documentation|guide|api-reference|tutorial|example", "url": "...", "description": "...", "difficulty": 1-5, "estimatedTime": "...", "rating": 4.2}]}`
         },
         {
           role: "user",
-          content: `Find additional learning resources for this topic:\n\n${content}`
+          content: `Find additional learning resources for this topic:\n\n${content}\n\n${originalUrl ? `Original source: ${originalUrl}` : ''}`
         }
       ],
       response_format: { type: "json_object" },
@@ -217,6 +218,18 @@ export async function generateAdditionalResources(content: string, complexityLev
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
     return result.resources || [];
+  } catch (error) {
+    console.error('Error generating additional resources:', error);
+    return [];
+  }
+}
+
+function isValidUrl(string: string): boolean {
+  try {
+    new URL(string);
+    return true;
+  } catch {
+    return false;
   }
 }
 

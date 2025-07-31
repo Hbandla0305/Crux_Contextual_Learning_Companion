@@ -45,13 +45,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Generate AI content in parallel
       try {
+        // Determine original URL for related content discovery
+        const originalUrl = contentType === 'url' ? content : undefined;
+        
         const [summary, flashcards, quiz, mindMap, learningPath, additionalResources, keyTerms] = await Promise.all([
           generateSummary(extractedContent, complexityLevel),
           generateFlashcards(extractedContent, complexityLevel),
           generateQuiz(extractedContent, complexityLevel),
           generateMindMap(extractedContent, complexityLevel),
           generateLearningPath(extractedContent, complexityLevel),
-          generateAdditionalResources(extractedContent, complexityLevel),
+          generateAdditionalResources(extractedContent, complexityLevel, originalUrl),
           generateKeyTerms(extractedContent, complexityLevel)
         ]);
 
