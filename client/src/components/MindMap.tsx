@@ -61,7 +61,7 @@ export default function MindMap({ mindMap }: MindMapProps) {
     }
   };
 
-  // Calculate main branch positions radiating from center
+  // Calculate main branch positions with proper spacing to avoid central overlap
   const calculateMainBranchPosition = (index: number, total: number) => {
     const angle = (index * 2 * Math.PI) / total - Math.PI / 2; // Start from top
     const x = centerX + mainBranchRadius * Math.cos(angle);
@@ -69,14 +69,31 @@ export default function MindMap({ mindMap }: MindMapProps) {
     return { x, y, angle };
   };
 
-  // Calculate sub-branch positions extending from main branches
+  // Calculate sub-branch positions with organic flow
   const calculateSubBranchPosition = (branchX: number, branchY: number, subIndex: number, subTotal: number, branchAngle: number) => {
     const baseAngle = branchAngle;
-    const spread = Math.PI / 3; // 60 degrees spread
-    const angle = baseAngle + (subIndex - (subTotal - 1) / 2) * (spread / (subTotal || 1));
-    const x = branchX + subBranchRadius * Math.cos(angle);
-    const y = branchY + subBranchRadius * Math.sin(angle);
+    const spread = Math.PI / 4; // 45 degrees spread for more natural look
+    const offsetAngle = (subIndex - (subTotal - 1) / 2) * (spread / Math.max(subTotal - 1, 1));
+    const angle = baseAngle + offsetAngle;
+    const distance = subBranchRadius + (subIndex * 10); // Varying distances for organic feel
+    const x = branchX + distance * Math.cos(angle);
+    const y = branchY + distance * Math.sin(angle);
     return { x, y };
+  };
+
+  // Create organic curved path between two points
+  const createOrganicPath = (x1: number, y1: number, x2: number, y2: number, curvature: number = 0.3) => {
+    const midX = (x1 + x2) / 2;
+    const midY = (y1 + y2) / 2;
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    // Create control points for natural curve
+    const controlX = midX + (-dy * curvature * distance / 100);
+    const controlY = midY + (dx * curvature * distance / 100);
+    
+    return `M ${x1} ${y1} Q ${controlX} ${controlY} ${x2} ${y2}`;
   };
 
   return (
@@ -103,88 +120,34 @@ export default function MindMap({ mindMap }: MindMapProps) {
               viewBox="0 0 800 500"
               xmlns="http://www.w3.org/2000/svg"
             >
-              {/* Define curved line markers */}
+              {/* Define gradients and filters for visual appeal */}
               <defs>
-                <marker id="arrowhead" markerWidth="10" markerHeight="7" 
-                  refX="9" refY="3.5" orient="auto" fill="#374151">
-                  <polygon points="0 0, 10 3.5, 0 7" />
-                </marker>
+                <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feDropShadow dx="2" dy="2" stdDeviation="3" floodColor="#00000030"/>
+                </filter>
+                <linearGradient id="centralGrad" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#4A5568" />
+                  <stop offset="100%" stopColor="#2D3748" />
+                </linearGradient>
               </defs>
 
-              {/* Central Topic - The core of the mind map */}
-              <g className="central-topic">
-                <circle 
-                  cx={centerX} 
-                  cy={centerY} 
-                  r="60" 
-                  fill="#2D3748" 
-                  stroke="#1A202C" 
-                  strokeWidth="4"
-                  className="drop-shadow-lg"
-                />
-                <text
-                  x={centerX}
-                  y={centerY}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fill="white"
-                  fontSize="14"
-                  fontWeight="bold"
-                  className="pointer-events-none"
-                >
-                  {mindMap.centralTopic.length > 16 
-                    ? mindMap.centralTopic.substring(0, 16) + "..."
-                    : mindMap.centralTopic
-                  }
-                </text>
-              </g>
-
-              {/* Main Branches radiating from center */}
+              {/* Main Branches - drawn first so they appear behind central topic */}
               {mindMap.branches.map((branch, branchIndex) => {
                 const branchPosition = calculateMainBranchPosition(branchIndex, mindMap.branches.length);
                 const branchColor = branchColors[branchIndex % branchColors.length];
 
                 return (
                   <g key={branchIndex} className="main-branch">
-                    {/* Curved main branch line */}
+                    {/* Organic curved main branch line */}
                     <path
-                      d={`M ${centerX} ${centerY} Q ${(centerX + branchPosition.x) / 2} ${(centerY + branchPosition.y) / 2} ${branchPosition.x} ${branchPosition.y}`}
+                      d={createOrganicPath(centerX, centerY, branchPosition.x, branchPosition.y, 0.4)}
                       stroke={branchColor}
-                      strokeWidth="6"
+                      strokeWidth="8"
                       fill="none"
                       className="branch-line"
+                      filter="url(#shadow)"
                     />
                     
-                    {/* Main branch node */}
-                    <ellipse
-                      cx={branchPosition.x}
-                      cy={branchPosition.y}
-                      rx="50"
-                      ry="25"
-                      fill={branchColor}
-                      stroke="#fff"
-                      strokeWidth="3"
-                      className="cursor-pointer hover:opacity-90 transition-all duration-200 drop-shadow-md"
-                      onClick={() => handleNodeClick(branch.topic, branch.subtopics)}
-                    />
-                    
-                    {/* Main branch text */}
-                    <text
-                      x={branchPosition.x}
-                      y={branchPosition.y}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      fill="white"
-                      fontSize="12"
-                      fontWeight="bold"
-                      className="cursor-pointer pointer-events-none"
-                    >
-                      {branch.topic.length > 12 
-                        ? branch.topic.substring(0, 12) + "..."
-                        : branch.topic
-                      }
-                    </text>
-
                     {/* Sub-branches extending from main branches */}
                     {branch.subtopics.slice(0, 3).map((subtopic, subIndex) => {
                       const subPosition = calculateSubBranchPosition(
@@ -197,51 +160,147 @@ export default function MindMap({ mindMap }: MindMapProps) {
                       
                       return (
                         <g key={subIndex} className="sub-branch">
-                          {/* Sub-branch line */}
-                          <line
-                            x1={branchPosition.x}
-                            y1={branchPosition.y}
-                            x2={subPosition.x}
-                            y2={subPosition.y}
+                          {/* Organic sub-branch line with decreasing thickness */}
+                          <path
+                            d={createOrganicPath(branchPosition.x, branchPosition.y, subPosition.x, subPosition.y, 0.2)}
                             stroke={branchColor}
-                            strokeWidth="3"
-                            strokeOpacity="0.7"
+                            strokeWidth="4"
+                            strokeOpacity="0.8"
+                            fill="none"
                           />
                           
-                          {/* Sub-branch node */}
+                          {/* Sub-branch node with meaningful content */}
                           <circle
                             cx={subPosition.x}
                             cy={subPosition.y}
-                            r="20"
+                            r="25"
                             fill="#fff"
                             stroke={branchColor}
-                            strokeWidth="2"
-                            className="cursor-pointer hover:scale-110 transition-transform duration-200"
-                            onClick={() => alert(`Subtopic: ${subtopic}`)}
+                            strokeWidth="3"
+                            className="cursor-pointer hover:scale-105 transition-all duration-200"
+                            filter="url(#shadow)"
+                            onClick={() => alert(`${subtopic}\n\nDefinition: This is a key component of ${branch.topic} that helps in understanding the broader concept. Click to explore related resources and detailed explanations.`)}
                           />
                           
-                          {/* Sub-branch text */}
+                          {/* Sub-branch keyword (single word/short phrase) */}
                           <text
                             x={subPosition.x}
-                            y={subPosition.y}
+                            y={subPosition.y - 2}
                             textAnchor="middle"
                             dominantBaseline="central"
                             fill={branchColor}
-                            fontSize="9"
-                            fontWeight="600"
+                            fontSize="10"
+                            fontWeight="bold"
                             className="pointer-events-none"
                           >
-                            {subtopic.length > 8 
-                              ? subtopic.substring(0, 8) + "..."
-                              : subtopic
-                            }
+                            {subtopic.split(' ')[0]} {/* Use only first word as keyword */}
                           </text>
+                          
+                          {/* Small additional text if needed */}
+                          {subtopic.split(' ').length > 1 && (
+                            <text
+                              x={subPosition.x}
+                              y={subPosition.y + 8}
+                              textAnchor="middle"
+                              dominantBaseline="central"
+                              fill={branchColor}
+                              fontSize="7"
+                              className="pointer-events-none"
+                            >
+                              {subtopic.split(' ')[1]?.substring(0, 6)}
+                            </text>
+                          )}
                         </g>
                       );
                     })}
+                    
+                    {/* Main branch node - positioned after lines */}
+                    <ellipse
+                      cx={branchPosition.x}
+                      cy={branchPosition.y}
+                      rx="55"
+                      ry="30"
+                      fill={branchColor}
+                      stroke="#fff"
+                      strokeWidth="4"
+                      className="cursor-pointer hover:opacity-95 transition-all duration-200"
+                      filter="url(#shadow)"
+                      onClick={() => handleNodeClick(branch.topic, branch.subtopics)}
+                    />
+                    
+                    {/* Main branch keyword */}
+                    <text
+                      x={branchPosition.x}
+                      y={branchPosition.y}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      fill="white"
+                      fontSize="13"
+                      fontWeight="bold"
+                      className="pointer-events-none"
+                    >
+                      {branch.topic.split(' ')[0]} {/* Use first word as main keyword */}
+                    </text>
+                    
+                    {/* Additional branch text if needed */}
+                    {branch.topic.split(' ').length > 1 && (
+                      <text
+                        x={branchPosition.x}
+                        y={branchPosition.y + 12}
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        fill="white"
+                        fontSize="9"
+                        fontWeight="500"
+                        className="pointer-events-none"
+                      >
+                        {branch.topic.split(' ').slice(1).join(' ').substring(0, 10)}
+                      </text>
+                    )}
                   </g>
                 );
               })}
+
+              {/* Central Topic - drawn last so it appears on top */}
+              <g className="central-topic">
+                <circle 
+                  cx={centerX} 
+                  cy={centerY} 
+                  r="70" 
+                  fill="url(#centralGrad)" 
+                  stroke="#1A202C" 
+                  strokeWidth="5"
+                  filter="url(#shadow)"
+                  className="cursor-pointer hover:opacity-95 transition-opacity duration-200"
+                  onClick={() => alert(`Central Topic: ${mindMap.centralTopic}\n\nThis is the main focus of your learning journey. All branches stem from this core concept.`)}
+                />
+                <text
+                  x={centerX}
+                  y={centerY - 5}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fill="white"
+                  fontSize="15"
+                  fontWeight="bold"
+                  className="pointer-events-none"
+                >
+                  {mindMap.centralTopic.split(' ')[0]} {/* Main keyword */}
+                </text>
+                {mindMap.centralTopic.split(' ').length > 1 && (
+                  <text
+                    x={centerX}
+                    y={centerY + 10}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fill="#E2E8F0"
+                    fontSize="11"
+                    fontWeight="500"
+                    className="pointer-events-none"
+                  >
+                    {mindMap.centralTopic.split(' ').slice(1).join(' ').substring(0, 12)}
+                  </text>
+                )}
+              </g>
             </svg>
 
             <div className="absolute bottom-4 left-4 text-sm text-gray-600 bg-white bg-opacity-90 rounded-lg p-2">
