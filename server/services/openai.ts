@@ -176,6 +176,20 @@ export async function generateLearningPath(content: string, complexityLevel: num
 
 export async function generateAdditionalResources(content: string, complexityLevel: number = 3): Promise<any[]> {
   try {
+    // Import the web search service
+    const { searchEducationalResources } = await import('./webSearch');
+    
+    // Extract main topic from content
+    const topic = extractMainTopic(content);
+    
+    // Search for real educational resources
+    const searchResults = await searchEducationalResources(topic, complexityLevel);
+    
+    return searchResults;
+  } catch (error) {
+    console.error('Error generating additional resources:', error);
+    
+    // Fallback to original AI-generated resources if web search fails
     const complexityPrompts = {
       1: "Recommend beginner-friendly resources like introductory articles, basic tutorials, and beginner books. Focus on accessible, well-explained content.",
       2: "Recommend intermediate resources including detailed articles, practical tutorials, and comprehensive guides. Balance theory with hands-on learning.",
@@ -203,9 +217,25 @@ export async function generateAdditionalResources(content: string, complexityLev
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
     return result.resources || [];
-  } catch (error) {
-    throw new Error(`Failed to generate resources: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
+}
+
+function extractMainTopic(content: string): string {
+  // Extract the main topic from the content
+  const sentences = content.split(/[.!?]+/);
+  const firstSentence = sentences[0]?.trim() || content;
+  
+  // Look for key terms and topics
+  const words = firstSentence.split(' ');
+  const stopWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'about'];
+  const meaningfulWords = words.filter(word => 
+    word.length > 2 && 
+    !stopWords.includes(word.toLowerCase()) &&
+    /^[a-zA-Z]+$/.test(word)
+  );
+  
+  // Return the first few meaningful words as the topic
+  return meaningfulWords.slice(0, 3).join(' ') || content.substring(0, 50);
 }
 
 export async function generateKeyTerms(content: string, complexityLevel: number = 3): Promise<any[]> {
