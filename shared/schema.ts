@@ -50,12 +50,13 @@ export type LearningPath = {
 
 export type AdditionalResource = {
   title: string;
-  type: 'article' | 'video' | 'book' | 'course' | 'tutorial' | 'documentation';
+  type: 'article' | 'video' | 'book' | 'course' | 'tutorial' | 'documentation' | 'guide' | 'api-reference' | 'example';
   url: string;
   description: string;
   difficulty: number;
   estimatedTime?: string;
   rating?: number;
+  source?: string;
 };
 
 export type KeyTerm = {

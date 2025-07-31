@@ -15,11 +15,14 @@ export default function AdditionalResources({ resources }: AdditionalResourcesPr
   const getResourceIcon = (type: string) => {
     const icons = {
       article: "fas fa-newspaper",
-      video: "fas fa-play-circle",
+      video: "fas fa-play-circle", 
       book: "fas fa-book",
       course: "fas fa-graduation-cap",
       tutorial: "fas fa-code",
-      documentation: "fas fa-file-text"
+      documentation: "fas fa-file-text",
+      guide: "fas fa-map",
+      'api-reference': "fas fa-code-branch",
+      example: "fas fa-lightbulb"
     };
     return icons[type as keyof typeof icons] || "fas fa-link";
   };
@@ -28,10 +31,13 @@ export default function AdditionalResources({ resources }: AdditionalResourcesPr
     const colors = {
       article: "bg-blue-100 text-blue-800",
       video: "bg-red-100 text-red-800",
-      book: "bg-green-100 text-green-800",
+      book: "bg-green-100 text-green-800", 
       course: "bg-purple-100 text-purple-800",
       tutorial: "bg-orange-100 text-orange-800",
-      documentation: "bg-gray-100 text-gray-800"
+      documentation: "bg-gray-100 text-gray-800",
+      guide: "bg-teal-100 text-teal-800",
+      'api-reference': "bg-indigo-100 text-indigo-800",
+      example: "bg-yellow-100 text-yellow-800"
     };
     return colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
@@ -57,7 +63,7 @@ export default function AdditionalResources({ resources }: AdditionalResourcesPr
             </Badge>
           </CardTitle>
           <p className="text-blue-600 mt-2">
-            Curated resources to deepen your understanding and expand your knowledge
+            Intelligent resource discovery powered by AI to find the most relevant learning materials
           </p>
         </CardHeader>
         <CardContent className="p-8">
@@ -68,8 +74,13 @@ export default function AdditionalResources({ resources }: AdditionalResourcesPr
                   <div className="flex items-center space-x-2">
                     <i className={`${getResourceIcon(resource.type)} text-lg text-gray-600`}></i>
                     <Badge className={getResourceColor(resource.type)}>
-                      {resource.type}
+                      {resource.type.replace('-', ' ')}
                     </Badge>
+                    {resource.source && (
+                      <Badge variant="outline" className="text-xs bg-gray-50">
+                        {resource.source}
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center space-x-1">
                     {getDifficultyStars(resource.difficulty)}

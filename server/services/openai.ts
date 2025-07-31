@@ -176,20 +176,38 @@ export async function generateLearningPath(content: string, complexityLevel: num
 
 export async function generateAdditionalResources(content: string, complexityLevel: number = 3, originalUrl?: string): Promise<any[]> {
   try {
-    // If we have an original URL, try to discover related content from the same source
-    if (originalUrl && isValidUrl(originalUrl)) {
-      const { discoverRelatedContent } = await import('./relatedContentDiscovery');
-      const topic = extractMainTopic(content);
-      const relatedResources = await discoverRelatedContent(originalUrl, topic);
+    const topic = extractMainTopic(content);
+    
+    // Strategy 1: Use Perplexity AI for intelligent web search (preferred)
+    try {
+      const { findLearningResources } = await import('./perplexityService');
+      const perplexityResources = await findLearningResources(topic, complexityLevel);
       
-      if (relatedResources.length > 0) {
-        console.log(`Found ${relatedResources.length} related resources from the same domain`);
-        return relatedResources;
+      if (perplexityResources.length > 0) {
+        console.log(`Perplexity found ${perplexityResources.length} learning resources for: ${topic}`);
+        return perplexityResources;
+      }
+    } catch (perplexityError) {
+      console.log('Perplexity search failed, trying domain-specific discovery');
+    }
+    
+    // Strategy 2: If we have an original URL, try to discover related content from the same source
+    if (originalUrl && isValidUrl(originalUrl)) {
+      try {
+        const { discoverRelatedContent } = await import('./relatedContentDiscovery');
+        const relatedResources = await discoverRelatedContent(originalUrl, topic);
+        
+        if (relatedResources.length > 0) {
+          console.log(`Found ${relatedResources.length} related resources from the same domain`);
+          return relatedResources;
+        }
+      } catch (domainError) {
+        console.log('Domain-specific discovery failed, falling back to AI generation');
       }
     }
     
-    // Fallback: Generate contextual resources using AI
-    const topic = extractMainTopic(content);
+    // Strategy 3: Fallback to OpenAI-generated contextual resources
+    console.log('Using OpenAI fallback for resource generation');
     
     const complexityPrompts = {
       1: "Recommend beginner-friendly resources like introductory articles, basic tutorials, and beginner books. Focus on accessible, well-explained content.",
@@ -206,7 +224,7 @@ export async function generateAdditionalResources(content: string, complexityLev
       messages: [
         {
           role: "system",
-          content: `You are an expert at curating educational resources. ${difficultyPrompt} Find 5-8 high-quality resources that complement the topic. Focus on official documentation, reputable educational platforms, and authoritative sources. For URLs, prioritize: official documentation sites, github repositories, well-known educational platforms (khan academy, coursera, edx), and authoritative technical sources. Make URLs realistic and educational. Respond with JSON in this format: {"resources": [{"title": "...", "type": "documentation|guide|api-reference|tutorial|example", "url": "...", "description": "...", "difficulty": 1-5, "estimatedTime": "...", "rating": 4.2}]}`
+          content: `You are an expert at curating educational resources. ${difficultyPrompt} Find 5-8 high-quality resources that complement the topic. Focus on official documentation, reputable educational platforms, and authoritative sources. For URLs, prioritize: official documentation sites, github repositories, well-known educational platforms (khan academy, coursera, edx), and authoritative technical sources. Make URLs realistic and educational. Respond with JSON in this format: {"resources": [{"title": "...", "type": "documentation|guide|api-reference|tutorial|example", "url": "...", "description": "...", "difficulty": 1-5, "estimatedTime": "...", "rating": 4.2, "source": "domain.com"}]}`
         },
         {
           role: "user",
