@@ -92,16 +92,16 @@ export default function KeyTerms({ keyTerms }: KeyTermsProps) {
           </div>
 
           {/* Terms Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredTerms.map((keyTerm, index) => (
               <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:border-green-300">
                 <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-semibold text-gray-900 text-lg cursor-pointer" 
+                  <h4 className="font-semibold text-gray-900 text-lg cursor-pointer flex-1 mr-2" 
                       onClick={() => toggleExpanded(keyTerm.term)}>
-                    {keyTerm.term}
+                    <span className="break-words">{keyTerm.term}</span>
                     <i className={`fas fa-chevron-${expandedTerm === keyTerm.term ? 'up' : 'down'} ml-2 text-sm text-gray-500`}></i>
                   </h4>
-                  <Badge className={getComplexityColor(keyTerm.complexity)}>
+                  <Badge className={`${getComplexityColor(keyTerm.complexity)} flex-shrink-0`}>
                     Level {keyTerm.complexity}
                   </Badge>
                 </div>
@@ -110,9 +110,13 @@ export default function KeyTerms({ keyTerms }: KeyTermsProps) {
                   {keyTerm.category}
                 </Badge>
                 
-                <p className="text-gray-600 text-sm mb-3 line-clamp-3">
-                  {keyTerm.definition}
-                </p>
+                <div className="text-gray-600 text-sm mb-3">
+                  {expandedTerm === keyTerm.term ? (
+                    <p className="whitespace-pre-wrap">{keyTerm.definition}</p>
+                  ) : (
+                    <p className="line-clamp-3">{keyTerm.definition}</p>
+                  )}
+                </div>
                 
                 {expandedTerm === keyTerm.term && (
                   <div className="space-y-3 border-t border-gray-200 pt-3">

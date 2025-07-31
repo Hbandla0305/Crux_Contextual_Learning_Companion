@@ -96,7 +96,7 @@ export default function Flashcards({ flashcards }: FlashcardsProps) {
                       </span>
                       <i className="fas fa-refresh text-blue-400"></i>
                     </div>
-                    <p className="text-gray-800 font-medium">{card.question}</p>
+                    <p className="text-gray-800 font-medium text-sm leading-tight overflow-hidden break-words">{card.question}</p>
                   </div>
 
                   {/* Back */}
@@ -107,7 +107,7 @@ export default function Flashcards({ flashcards }: FlashcardsProps) {
                       </span>
                       <i className="fas fa-check text-green-400"></i>
                     </div>
-                    <p className="text-gray-800 text-sm mb-4">{card.answer}</p>
+                    <p className="text-gray-800 text-sm mb-4 leading-tight overflow-hidden break-words">{card.answer}</p>
                     <div className="flex space-x-2">
                       <Button
                         size="sm"

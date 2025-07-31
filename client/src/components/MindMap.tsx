@@ -78,11 +78,11 @@ export default function MindMap({ mindMap }: MindMapProps) {
             </Button>
           </div>
 
-          <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-8 min-h-96 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-8 min-h-80 relative overflow-hidden">
             <svg
               ref={svgRef}
-              className="w-full h-96"
-              viewBox="0 0 800 400"
+              className="w-full h-80"
+              viewBox="0 0 800 350"
               xmlns="http://www.w3.org/2000/svg"
             >
               {/* Central Node */}

@@ -191,7 +191,7 @@ export async function generateAdditionalResources(content: string, complexityLev
       messages: [
         {
           role: "system",
-          content: `You are an expert at curating educational resources. ${difficultyPrompt} Find 5-8 high-quality resources that complement the topic. Include diverse resource types (articles, videos, books, courses, tutorials). Provide realistic URLs when possible, or use example.com for demonstrations. Respond with JSON in this format: {"resources": [{"title": "...", "type": "article|video|book|course|tutorial|documentation", "url": "...", "description": "...", "difficulty": 1-5, "estimatedTime": "...", "rating": 4.5}]}`
+          content: `You are an expert at curating educational resources. ${difficultyPrompt} Find 5-8 high-quality resources that complement the topic. Include diverse resource types (articles, videos, books, courses, tutorials). For URLs, use well-known educational platforms like: khan academy, coursera, edx, youtube, medium, github, wikipedia, official documentation sites, or academic sources. Make URLs realistic and educational. Respond with JSON in this format: {"resources": [{"title": "...", "type": "article|video|book|course|tutorial|documentation", "url": "...", "description": "...", "difficulty": 1-5, "estimatedTime": "...", "rating": 4.5}]}`
         },
         {
           role: "user",
