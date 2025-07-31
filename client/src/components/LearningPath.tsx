@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+
 import type { LearningPath as LearningPathType } from "@shared/schema";
 
 interface LearningPathProps {
@@ -126,12 +126,8 @@ export default function LearningPath({ learningPath }: LearningPathProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {learningPath.nextTopics.map((topic, index) => (
                     <div key={index} className="bg-green-50 border border-green-200 rounded-lg p-3">
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center">
                         <span className="text-green-800 font-medium">{topic}</span>
-                        <Button size="sm" variant="outline" className="text-green-700 border-green-300 hover:bg-green-100">
-                          <i className="fas fa-plus mr-1"></i>
-                          Plan
-                        </Button>
                       </div>
                     </div>
                   ))}
@@ -139,23 +135,7 @@ export default function LearningPath({ learningPath }: LearningPathProps) {
               </div>
             )}
 
-            {/* Progress Tracking */}
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <h4 className="font-medium text-gray-900 mb-3">
-                <i className="fas fa-chart-line mr-2 text-blue-600"></i>
-                Learning Progress
-              </h4>
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span>Current Progress</span>
-                  <span>Getting Started</span>
-                </div>
-                <Progress value={15} className="h-2" />
-                <p className="text-xs text-gray-600">
-                  Continue with the recommended steps to track your progress through this learning path.
-                </p>
-              </div>
-            </div>
+
           </div>
         </CardContent>
       </Card>

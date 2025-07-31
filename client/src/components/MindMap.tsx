@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { MindMapData } from "@shared/schema";
@@ -9,8 +9,15 @@ interface MindMapProps {
 
 export default function MindMap({ mindMap }: MindMapProps) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
   if (!mindMap || !mindMap.centralTopic) return null;
+
+  const handleNodeClick = (topic: string, subtopics: string[]) => {
+    setSelectedNode(topic);
+    // Show subtopics or node details
+    alert(`Topic: ${topic}\n\nSubtopics:\n${subtopics.join('\n')}`);
+  };
 
   const colors = [
     "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#06B6D4", "#EC4899", "#6366F1", "#84CC16"
@@ -130,6 +137,7 @@ export default function MindMap({ mindMap }: MindMapProps) {
                       stroke={color}
                       strokeWidth="2"
                       className="cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => handleNodeClick(branch.topic, branch.subtopics)}
                     />
                     
                     {/* Branch text */}
@@ -141,6 +149,8 @@ export default function MindMap({ mindMap }: MindMapProps) {
                       fill="white"
                       fontSize="10"
                       fontWeight="600"
+                      className="cursor-pointer"
+                      onClick={() => handleNodeClick(branch.topic, branch.subtopics)}
                     >
                       {branch.topic.length > 8 
                         ? branch.topic.substring(0, 8) + "..."
