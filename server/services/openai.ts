@@ -184,11 +184,11 @@ export async function generateAdditionalResources(content: string, complexityLev
       const perplexityResources = await findLearningResources(topic, complexityLevel);
       
       if (perplexityResources.length > 0) {
-        console.log(`Perplexity found ${perplexityResources.length} learning resources for: ${topic}`);
+        console.log(`✅ Perplexity found ${perplexityResources.length} learning resources for: ${topic}`);
         return perplexityResources;
       }
     } catch (perplexityError) {
-      console.log('Perplexity search failed, trying domain-specific discovery');
+      console.log('❌ Perplexity search failed, trying domain-specific discovery', perplexityError.message);
     }
     
     // Strategy 2: If we have an original URL, try to discover related content from the same source
@@ -198,16 +198,16 @@ export async function generateAdditionalResources(content: string, complexityLev
         const relatedResources = await discoverRelatedContent(originalUrl, topic);
         
         if (relatedResources.length > 0) {
-          console.log(`Found ${relatedResources.length} related resources from the same domain`);
+          console.log(`🔍 Found ${relatedResources.length} related resources from the same domain`);
           return relatedResources;
         }
       } catch (domainError) {
-        console.log('Domain-specific discovery failed, falling back to AI generation');
+        console.log('🔍 Domain-specific discovery failed, falling back to ChatGPT generation');
       }
     }
     
-    // Strategy 3: Fallback to OpenAI-generated contextual resources
-    console.log('Using OpenAI fallback for resource generation');
+    // Strategy 3: Fallback to ChatGPT for comprehensive resource generation
+    console.log('🤖 Using ChatGPT fallback for comprehensive resource generation');
     
     const complexityPrompts = {
       1: "Recommend beginner-friendly resources like introductory articles, basic tutorials, and beginner books. Focus on accessible, well-explained content.",
@@ -224,11 +224,11 @@ export async function generateAdditionalResources(content: string, complexityLev
       messages: [
         {
           role: "system",
-          content: `You are an expert at curating educational resources. ${difficultyPrompt} Find 5-8 high-quality resources that complement the topic. Focus on official documentation, reputable educational platforms, and authoritative sources. For URLs, prioritize: official documentation sites, github repositories, well-known educational platforms (khan academy, coursera, edx), and authoritative technical sources. Make URLs realistic and educational. Respond with JSON in this format: {"resources": [{"title": "...", "type": "documentation|guide|api-reference|tutorial|example", "url": "...", "description": "...", "difficulty": 1-5, "estimatedTime": "...", "rating": 4.2, "source": "domain.com"}]}`
+          content: `You are an expert educational resource curator. ${difficultyPrompt} Find 6-8 diverse, high-quality learning resources including courses, articles, tutorials, documentation, and guides. Focus on authoritative sources like official documentation, reputable educational platforms (Coursera, Udemy, edX, Khan Academy), well-known tech sites (MDN, GitHub, Stack Overflow), and industry leaders. Ensure URLs are realistic and educational. Respond with JSON: {"resources": [{"title": "Resource Title", "type": "course|article|tutorial|documentation|guide|video", "url": "https://realistic-url.com", "description": "Brief helpful description", "difficulty": 1-5, "estimatedTime": "duration", "rating": 4.0-5.0, "source": "domain.com"}]}`
         },
         {
           role: "user",
-          content: `Find additional learning resources for this topic:\n\n${content}\n\n${originalUrl ? `Original source: ${originalUrl}` : ''}`
+          content: `Find comprehensive learning resources for: ${topic}\n\nContent context: ${content.substring(0, 500)}...\n\n${originalUrl ? `Original source: ${originalUrl}` : ''}`
         }
       ],
       response_format: { type: "json_object" },
