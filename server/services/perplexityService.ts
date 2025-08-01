@@ -36,7 +36,7 @@ interface LearningResource {
   source: string;
 }
 
-export async function findLearningResources(topic: string, complexityLevel: number = 3): Promise<LearningResource[]> {
+export async function findLearningResources(topic: string, complexityLevel: number = 3, summary?: string): Promise<LearningResource[]> {
   try {
     const complexityPrompts = {
       1: "beginner-friendly introductory tutorials, basic guides, and getting started documentation",
@@ -48,7 +48,9 @@ export async function findLearningResources(topic: string, complexityLevel: numb
 
     const difficultyPrompt = complexityPrompts[complexityLevel as keyof typeof complexityPrompts] || complexityPrompts[3];
 
-    const searchQuery = `Find ${difficultyPrompt} for learning about ${topic}. Look for official documentation, comprehensive tutorials, practical guides, examples, and educational resources from authoritative sources.`;
+    // Create a focused search query using the topic and summary context
+    const contextInfo = summary ? ` Context: ${summary.substring(0, 300)}...` : '';
+    const searchQuery = `Find ${difficultyPrompt} for learning ${topic}.${contextInfo} Look for courses, tutorials, documentation, guides, and educational resources from authoritative sources. Focus on practical learning materials about ${topic}, not about video platforms or content sources.`;
 
     const response = await axios.post<PerplexityResponse>(
       'https://api.perplexity.ai/chat/completions',
@@ -140,7 +142,7 @@ export async function findLearningResources(topic: string, complexityLevel: numb
     console.log(`Perplexity found ${formattedResources.length} learning resources for: ${topic}`);
     return formattedResources;
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error with Perplexity API:', error);
     
     // Log the specific error for debugging
@@ -175,7 +177,7 @@ function extractDescriptionFromContent(content: string, title: string, topic: st
 function extractUrlsFromContent(content: string): string[] {
   const urlRegex = /https?:\/\/[^\s<>"{}|\\^`[\]]+/g;
   const urls = content.match(urlRegex) || [];
-  return [...new Set(urls)]; // Remove duplicates
+  return Array.from(new Set(urls)); // Remove duplicates
 }
 
 function validateResourceType(type: string): LearningResource['type'] {

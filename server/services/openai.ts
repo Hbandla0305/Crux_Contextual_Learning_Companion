@@ -174,14 +174,18 @@ export async function generateLearningPath(content: string, complexityLevel: num
   }
 }
 
-export async function generateAdditionalResources(content: string, complexityLevel: number = 3, originalUrl?: string): Promise<any[]> {
+export async function generateAdditionalResources(content: string, complexityLevel: number = 3, originalUrl?: string, summary?: string): Promise<any[]> {
   try {
-    const topic = extractMainTopic(content);
+    // Use summary if available, otherwise extract topic from content
+    const topicSource = summary || content;
+    const topic = extractMainTopic(topicSource);
+    
+    console.log(`🎯 Generating additional resources for topic: "${topic}" (complexity: ${complexityLevel})`);
     
     // Strategy 1: Use Perplexity AI for intelligent web search (preferred)
     try {
       const { findLearningResources } = await import('./perplexityService');
-      const perplexityResources = await findLearningResources(topic, complexityLevel);
+      const perplexityResources = await findLearningResources(topic, complexityLevel, summary);
       
       if (perplexityResources.length > 0) {
         console.log(`✅ Perplexity found ${perplexityResources.length} learning resources for: ${topic}`);
@@ -228,7 +232,7 @@ export async function generateAdditionalResources(content: string, complexityLev
         },
         {
           role: "user",
-          content: `Find comprehensive learning resources for: ${topic}\n\nContent context: ${content.substring(0, 500)}...\n\n${originalUrl ? `Original source: ${originalUrl}` : ''}`
+          content: `Find comprehensive learning resources for: ${topic}\n\nTopic context: ${summary ? summary.substring(0, 600) : content.substring(0, 600)}...\n\nFocus on educational materials that help learn ${topic}, not about the original source platform.`
         }
       ],
       response_format: { type: "json_object" },

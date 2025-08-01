@@ -48,13 +48,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Determine original URL for related content discovery
         const originalUrl = contentType === 'url' ? content : undefined;
         
-        const [summary, flashcards, quiz, mindMap, learningPath, additionalResources, keyTerms] = await Promise.all([
-          generateSummary(extractedContent, complexityLevel),
+        // Generate summary first since we need it for additional resources
+        const summary = await generateSummary(extractedContent, complexityLevel);
+        
+        const [flashcards, quiz, mindMap, learningPath, additionalResources, keyTerms] = await Promise.all([
           generateFlashcards(extractedContent, complexityLevel),
           generateQuiz(extractedContent, complexityLevel),
           generateMindMap(extractedContent, complexityLevel),
           generateLearningPath(extractedContent, complexityLevel),
-          generateAdditionalResources(extractedContent, complexityLevel, originalUrl),
+          generateAdditionalResources(extractedContent, complexityLevel, originalUrl, summary),
           generateKeyTerms(extractedContent, complexityLevel)
         ]);
 
